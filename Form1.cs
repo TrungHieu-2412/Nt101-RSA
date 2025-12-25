@@ -12,7 +12,12 @@ namespace RSA
         public Form1()
         {
             InitializeComponent();
-        }
+        }        
+             
+
+       
+
+     
 
         private void btnGenerate_Click(object sender, EventArgs e)
         {
@@ -64,34 +69,6 @@ namespace RSA
             txtCiphertext.Text = string.Join(",", cipherNumbers);
         }
 
-        private void btnDecrypt_Click(object sender, EventArgs e)
-        {
-            if (n == 0) { MessageBox.Show("Vui lòng tạo khóa trước!"); return; }
-
-            try
-            {
-                string cipherText = txtCiphertext.Text;
-                string[] numbers = cipherText.Split(',');
-                string decryptedText = "";
-
-                foreach (string numStr in numbers)
-                {
-                    if (string.IsNullOrWhiteSpace(numStr)) continue;
-
-                    BigInteger c = BigInteger.Parse(numStr.Trim());
-                    BigInteger decryptedCharNum = BigInteger.ModPow(c, d_key, n);
-                    decryptedText += (char)decryptedCharNum;
-                }
-
-                txtPlaintext.Text = decryptedText;
-                MessageBox.Show("Giải mã xong: " + decryptedText);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Lỗi giải mã: Định dạng bản mã không đúng.\n" + ex.Message);
-            }
-        }
-
         private void btnSign_Click(object sender, EventArgs e)
         {
             if (n == 0) { MessageBox.Show("Vui lòng tạo khóa trước!"); return; }
@@ -117,43 +94,6 @@ namespace RSA
 
             txtCiphertext.Text = string.Join(",", signatureNumbers);
             MessageBox.Show("Đã ký tên thành công!");
-        }
-
-        private void btnVerify_Click(object sender, EventArgs e)
-        {
-            if (n == 0) { MessageBox.Show("Chưa có khóa công khai để xác minh!"); return; }
-            if (string.IsNullOrEmpty(txtCiphertext.Text)) { MessageBox.Show("Không có chữ ký để xác minh."); return; }
-
-            try
-            {
-                string signatureStr = txtCiphertext.Text;
-                string originalMessage = txtPlaintext.Text;
-
-                string[] numbers = signatureStr.Split(',');
-                string decryptedSignature = "";
-
-                foreach (string numStr in numbers)
-                {
-                    if (string.IsNullOrWhiteSpace(numStr)) continue;
-                    BigInteger s = BigInteger.Parse(numStr.Trim());
-
-                    BigInteger m_prime = BigInteger.ModPow(s, e_key, n);
-                    decryptedSignature += (char)m_prime;
-                }
-
-                if (decryptedSignature == originalMessage)
-                {
-                    MessageBox.Show("CHỮ KÝ HỢP LỆ!\nThông điệp chính xác.", "Kết quả xác minh");
-                }
-                else
-                {
-                    MessageBox.Show($"CHỮ KÝ KHÔNG HỢP LỆ!\nNội dung từ chữ ký: {decryptedSignature}\nNội dung gốc: {originalMessage}", "Cảnh báo giả mạo");
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Lỗi xác minh: " + ex.Message);
-            }
         }
 
         private void btnSecureSend_Click(object sender, EventArgs e)
@@ -192,6 +132,70 @@ namespace RSA
             catch (Exception ex)
             {
                 MessageBox.Show("Lỗi: " + ex.Message);
+            }
+        }
+        private void btnDecrypt_Click(object sender, EventArgs e)
+        {
+            if (n == 0) { MessageBox.Show("Vui lòng tạo khóa trước!"); return; }
+
+            try
+            {
+                string cipherText = txtCiphertext.Text;
+                string[] numbers = cipherText.Split(',');
+                string decryptedText = "";
+
+                foreach (string numStr in numbers)
+                {
+                    if (string.IsNullOrWhiteSpace(numStr)) continue;
+
+                    BigInteger c = BigInteger.Parse(numStr.Trim());
+                    BigInteger decryptedCharNum = BigInteger.ModPow(c, d_key, n);
+                    decryptedText += (char)decryptedCharNum;
+                }
+
+                txtPlaintext.Text = decryptedText;
+                MessageBox.Show("Giải mã xong: " + decryptedText);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Lỗi giải mã: Định dạng bản mã không đúng.\n" + ex.Message);
+            }
+        }
+
+        private void btnVerify_Click(object sender, EventArgs e)
+        {
+            if (n == 0) { MessageBox.Show("Chưa có khóa công khai để xác minh!"); return; }
+            if (string.IsNullOrEmpty(txtCiphertext.Text)) { MessageBox.Show("Không có chữ ký để xác minh."); return; }
+
+            try
+            {
+                string signatureStr = txtCiphertext.Text;
+                string originalMessage = txtPlaintext.Text;
+
+                string[] numbers = signatureStr.Split(',');
+                string decryptedSignature = "";
+
+                foreach (string numStr in numbers)
+                {
+                    if (string.IsNullOrWhiteSpace(numStr)) continue;
+                    BigInteger s = BigInteger.Parse(numStr.Trim());
+
+                    BigInteger m_prime = BigInteger.ModPow(s, e_key, n);
+                    decryptedSignature += (char)m_prime;
+                }
+
+                if (decryptedSignature == originalMessage)
+                {
+                    MessageBox.Show("CHỮ KÝ HỢP LỆ!\nThông điệp chính xác.", "Kết quả xác minh");
+                }
+                else
+                {
+                    MessageBox.Show($"CHỮ KÝ KHÔNG HỢP LỆ!\nNội dung từ chữ ký: {decryptedSignature}\nNội dung gốc: {originalMessage}", "Cảnh báo giả mạo");
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Lỗi xác minh: " + ex.Message);
             }
         }
 
